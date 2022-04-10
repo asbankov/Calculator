@@ -3,9 +3,13 @@ package com.company;
 public class Calculator {
     private String input;
     private String inputModified;
-    private final String ISACCEPTARAB = "^(\\d|10)[+\\-*/](\\d|10)$";
+    private final String ISACCEPTARAB = "^([1-9]|10)[+\\-*/]([1-9]|10)$";
     private final String ISACCEPTROM = "^[iIvVxX]{1,4}[+\\-*/][iIvVxX]{1,4}$";
     private final String SPLITTER = "[+\\-*/]";
+    private final String EXCEPTARABROM = "^([1-9]|10)[+\\-*/][iIvVxX]{1,4}$";
+    private final String EXCEPTROMARAB = "^[iIvVxX]{1,4}[+\\-*/]([1-9]|10)$";
+    private final String EXCEPTMATHOP = "^[^+\\-*/]*$";
+
 
     public Calculator (String input) {
         this.input = input;
@@ -24,8 +28,16 @@ public class Calculator {
                 System.out.println(ex.getMessage());
             }
         } else {
-            //Спросить, нужно ли конкретизировать типы выбрасываемых исключений
-            System.out.println("Exception: your input is not acceptable");
+            boolean isArabRom = inputModified.matches(EXCEPTARABROM);
+            boolean isRomArab = inputModified.matches(EXCEPTROMARAB);
+            boolean isMathOp = inputModified.matches(EXCEPTMATHOP);
+            if (isArabRom || isRomArab) {
+                System.out.println("throws Exception //т.к. используются одновременно разные системы счисления");
+            } else if (isMathOp) {
+                System.out.println("throws Exception //т.к. строка не является математической операцией");
+            } else {
+                System.out.println("throws Exception //т.к. формат математической операции не удовлетворяет заданию");
+            }
         }
     }
 
