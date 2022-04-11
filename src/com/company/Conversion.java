@@ -20,6 +20,6 @@ public class Conversion {
                 return i;
             }
         }
-        throw new Exception("throws Exception //т.к. операнд " + s + " некорректен");
+        throw new Exception("throws Exception //т.к. операнд " + s + " не является числом от 1 до 10 ни в одной из допустимых систем счисления");
     }
 }

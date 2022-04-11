@@ -8,7 +8,8 @@ public class Calculator {
     private final String SPLITTER = "[+\\-*/]";
     private final String EXCEPTARABROM = "^([1-9]|10)[+\\-*/][iIvVxX]{1,4}$";
     private final String EXCEPTROMARAB = "^[iIvVxX]{1,4}[+\\-*/]([1-9]|10)$";
-    private final String EXCEPTMATHOP = "^[^+\\-*/]*$";
+    private final String ISACCEPTARABNUM = "^([1-9]|10)$";
+    private final String ISACCEPTROMNUM = "^[iIvVxX]{1,4}$";
 
 
     public Calculator (String input) {
@@ -28,16 +29,7 @@ public class Calculator {
                 System.out.println(ex.getMessage());
             }
         } else {
-            boolean isArabRom = inputModified.matches(EXCEPTARABROM);
-            boolean isRomArab = inputModified.matches(EXCEPTROMARAB);
-            boolean isMathOp = inputModified.matches(EXCEPTMATHOP);
-            if (isArabRom || isRomArab) {
-                System.out.println("throws Exception //т.к. используются одновременно разные системы счисления");
-            } else if (isMathOp) {
-                System.out.println("throws Exception //т.к. строка не является математической операцией");
-            } else {
-                System.out.println("throws Exception //т.к. формат математической операции не удовлетворяет заданию");
-            }
+            exceptionsHandling();
         }
     }
 
@@ -91,5 +83,54 @@ public class Calculator {
                 break;
         }
         return result;
+    }
+
+    private void exceptionsHandling() {
+        String[] splittedInput = inputModified.split(SPLITTER);
+        int quantOfOperands = splittedInput.length;
+        boolean isArabRom = inputModified.matches(EXCEPTARABROM);
+        boolean isRomArab = inputModified.matches(EXCEPTROMARAB);
+        if (quantOfOperands == 1) {
+            if (splittedInput[0].length() < inputModified.length()) { // 2 +
+                System.out.println("throws Exception //т.к. введённая строка содержит только один операнд");
+            } else { // 123
+                System.out.println("throws Exception //т.к. введённая строка не содержит ни одного корректного оператора (+, -, *, /)");
+            }
+        } else if (quantOfOperands >= 3) { // 1 + 2 + 3
+            System.out.println("throws Exception //т.к. введённая строка содержит более одного корректного оператора (+, -, *, /)");
+        } else {
+            if (splittedInput[0].isEmpty()) { // + 2
+                System.out.println("throws Exception //т.к. введённая строка содержит только один операнд");
+            } else if (isArabRom) { // 2 + XX
+                try {
+                    int tmp = Conversion.romToArab(splittedInput[1]);
+                    System.out.println("throws Exception //т.к. введенные операнды корректны, но используются одновременно разные системы счисления");
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else if (isRomArab) { // XX + 2
+                try {
+                    int tmp = Conversion.romToArab(splittedInput[0]);
+                    System.out.println("throws Exception //т.к. введенные операнды корректны, но используются одновременно разные системы счисления");
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else { // abc + 1, 1 + abc, X + abc, XX + abc
+                boolean isFOpAccArabNum = splittedInput[0].matches(ISACCEPTARABNUM);
+                boolean isFOpAccRomNum = splittedInput[0].matches(ISACCEPTROMNUM);
+                if (isFOpAccArabNum) {
+                    System.out.println("throws Exception //т.к. операнд " + splittedInput[1] + " не является числом от 1 до 10 ни в одной из допустимых систем счисления");
+                } else if (isFOpAccRomNum) {
+                    try {
+                        int tmp = Conversion.romToArab(splittedInput[0]);
+                        System.out.println("throws Exception //т.к. операнд " + splittedInput[1] + " не является числом от 1 до 10 ни в одной из допустимых систем счисления");
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                } else {
+                    System.out.println("throws Exception //т.к. операнд " + splittedInput[0] + " не является числом от 1 до 10 ни в одной из допустимых систем счисления");
+                }
+            }
+        }
     }
 }
